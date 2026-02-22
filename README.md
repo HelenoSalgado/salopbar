@@ -93,6 +93,8 @@ salopbar
 
 ---
 
+![screenshot](screen/capa.png)
+
 ## 📚 Referências
 
 *   **AGS Docs**: <https://aylur.github.io/ags/>

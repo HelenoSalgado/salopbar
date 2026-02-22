@@ -1,0 +1,3 @@
+[submodule "aur/salopbar"]
+	path = aur/salopbar
+	url = ssh://aur@aur.archlinux.org/salopbar.git
