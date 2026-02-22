@@ -2,10 +2,19 @@
 <component type="console-application">
   <id>@domain@</id>
   <name>Salop Bar</name>
-  <summary>A short summary describing what this software is about</summary>
-  <project_license>Sob a licença GPL-3.0-or-later</project_license>
+  <summary>Barra de status leve e funcional para Hyprland</summary>
+  <project_license>GPL-3.0-or-later</project_license>
   <description>
-    <p>Uma barra de navegação simples para Arch Linux + Hyprland</p>
+    <p>Salop Bar é uma barra de status moderna desenvolvida para o ambiente Hyprland no Arch Linux.</p>
+    <p>Principais funcionalidades:</p>
+    <ul>
+      <li>Controle multimídia (MPRIS) para players de música e vídeo.</li>
+      <li>Indicadores de sistema: volume, brilho e rede.</li>
+      <li>Gerenciamento visual de áreas de trabalho (Workspaces).</li>
+      <li>Central de notificações integrada.</li>
+      <li>Relógio e data personalizáveis.</li>
+    </ul>
+    <p>Construída com AGS e TypeScript, oferece alta performance e integração nativa com Wayland.</p>
   </description>
   <developer>
     <name>Heleno Salgado</name>

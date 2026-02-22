@@ -1,4 +1,4 @@
-project('salopbar', 'c', version: '0.0.0', meson_version: '>= 1.9.0')
+project('salopbar', 'c', version: '0.0.1', meson_version: '>= 1.9.0')
 
 dependency('gtk4')
 dependency('libadwaita-1')

@@ -8,13 +8,17 @@
   },
   "keywords": [
     "hyprland",
-    "arch linux",
-    "bar",
+    "arch-linux",
+    "status-bar",
     "gjs",
-    "ags"
+    "ags",
+    "typescript",
+    "gtk4",
+    "wayland",
+    "mpris"
   ],
-  "description": "Uma barra de navegação simples para Arch Linux + Hyprland",
-  "version": "0.0.0",
+  "description": "Barra de status moderna para Hyprland e Arch Linux, construída com AGS e TypeScript.",
+  "version": "0.0.1",
   "author": {
     "name": "Heleno Salgado",
     "url": "https://heleno.dev"
