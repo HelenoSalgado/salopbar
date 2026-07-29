@@ -73,7 +73,7 @@ tooltip{
 }
 
 .menu-shutdown label{
-    color: #21232e;
+    color: var(--fg-color);
     margin: 0 7px;
 }
 .menu-shutdown button{
@@ -93,4 +93,80 @@ tooltip{
     background-color: transparent;
     font-weight: bold;
     color: var(--fg-color);
+}
+
+/* Estilo harmonizado para TODOS os popovers do menu da barra (Mpris, Brilho, Áudio, Relógio, Desligar) */
+popover > contents {
+    background-color: var(--bg-color);
+    color: var(--fg-color);
+    border: 2px solid #21232e;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Estilo unificado para os botões dentro dos popovers (Mpris, Shutdown, etc.) */
+popover button {
+    background: #21232e;
+    color: var(--soft-destaque);
+    border-radius: 7px;
+    padding: 6px 10px;
+    margin: 0 4px;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+popover button:hover {
+    background-color: var(--soft-destaque);
+    color: #21232e;
+}
+
+/* Controles deslizantes (scales/sliders) nos popovers de Brilho e Áudio */
+popover scale {
+    margin: 6px 4px;
+}
+
+popover scale trough {
+    background-color: #21232e;
+    border-radius: 6px;
+    min-height: 8px;
+}
+
+popover scale highlight {
+    background-color: var(--soft-destaque);
+    border-radius: 6px;
+}
+
+popover scale slider {
+    background-color: var(--fg-color);
+    border-radius: 50%;
+    min-width: 14px;
+    min-height: 14px;
+}
+
+/* Calendário no popover de Relógio */
+popover calendar {
+    color: var(--fg-color);
+    background-color: transparent;
+}
+
+popover calendar.header {
+    color: var(--soft-destaque);
+    font-weight: bold;
+}
+
+popover calendar.button {
+    background: #21232e;
+    color: var(--soft-destaque);
+}
+
+popover calendar.button:hover {
+    background-color: var(--soft-destaque);
+    color: #21232e;
+}
+
+popover calendar:selected {
+    background-color: var(--soft-destaque);
+    color: #21232e;
+    border-radius: 6px;
 }
