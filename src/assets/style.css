@@ -30,7 +30,8 @@ window.Bar{
     font-weight: normal;
 }
 
-.mpris > button, .brightness > button, .audio-output > button, .wireless, .clock > button, .shutdown > button, .menu-shutdown button{
+.buttons-tools menubutton > button, .left-tools menubutton > button, .mpris > button, .brightness > button, .audio-output > button, .wireless, .clock > button, .shutdown > button, .menu-shutdown button,
+.toolbox-btn > button, .screenshot-btn > button, .sysmonitor-btn > button, .clipboard-btn > button, .nightlight-btn > button, .bluetooth-btn > button, .battery-btn > button, .notif-btn > button {
     background: #21232e;
     padding: 2px 7px;
     border-radius: 7px;
@@ -38,6 +39,7 @@ window.Bar{
     color: #89b4fa;
     border: none;
     font-weight: normal;
+    transition: all 0.2s ease;
 }
 .shutdown > button{
     color: indianred;
@@ -47,7 +49,15 @@ label{
     margin: 0 7px;
 }
 
-.workspaces button:hover, .menu-shutdown button:hover{
+.bar-separator {
+    color: #585b70;
+    font-weight: bold;
+    margin: 0 4px;
+}
+
+.workspaces button:hover, .menu-shutdown button:hover,
+.buttons-tools menubutton > button:hover, .left-tools menubutton > button:hover,
+.toolbox-btn > button:hover, .screenshot-btn > button:hover, .sysmonitor-btn > button:hover, .clipboard-btn > button:hover, .nightlight-btn > button:hover, .bluetooth-btn > button:hover, .battery-btn > button:hover, .notif-btn > button:hover {
     box-shadow: inherit;
     text-shadow: inherit;
     color: #21232e;
@@ -124,12 +134,14 @@ popover button:hover {
 /* Controles deslizantes (scales/sliders) nos popovers de Brilho e Áudio */
 popover scale {
     margin: 6px 4px;
+    min-height: 20px;
 }
 
 popover scale trough {
     background-color: #21232e;
     border-radius: 6px;
     min-height: 8px;
+    margin: 6px 0;
 }
 
 popover scale highlight {
@@ -140,8 +152,9 @@ popover scale highlight {
 popover scale slider {
     background-color: var(--fg-color);
     border-radius: 50%;
-    min-width: 14px;
-    min-height: 14px;
+    min-width: 16px;
+    min-height: 16px;
+    margin: -4px 0;
 }
 
 /* Calendário no popover de Relógio */
@@ -169,4 +182,41 @@ popover calendar:selected {
     background-color: var(--soft-destaque);
     color: #21232e;
     border-radius: 6px;
+}
+
+/* Central de Utilitários (Toolbox) e Ferramentas */
+.toolbox-item {
+    background-color: rgba(33, 35, 46, 0.6);
+    border-radius: 10px;
+    padding: 8px 10px;
+    transition: all 0.2s ease;
+}
+
+.toolbox-item:hover {
+    background-color: rgba(137, 180, 250, 0.15);
+}
+
+.pin-btn {
+    background: transparent;
+    border: none;
+    padding: 4px 6px;
+    border-radius: 6px;
+}
+
+.pin-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Central de Notificações */
+.notif-card {
+    background-color: rgba(33, 35, 46, 0.8);
+    border-radius: 8px;
+    padding: 8px 10px;
+    border: 1px solid #313244;
+    transition: all 0.2s ease;
+}
+
+.notif-card:hover {
+    background-color: rgba(137, 180, 250, 0.15);
+    border-color: #89b4fa;
 }

@@ -7,6 +7,8 @@ import Shutdown from "../components/Shutdown"
 import OsLogo from "../components/OsLogo"
 import BrightnessSlider from "../components/Brightness"
 import Mpris from "../components/Mpris"
+import Toolbox, { PromotedTools } from "../components/Toolbox"
+import NotificationCenter from "../components/NotificationCenter"
 import { onCleanup } from "ags"
 
 interface BarProps {
@@ -29,17 +31,21 @@ export default function Bar({app, gdkmonitor}: BarProps) {
         anchor={TOP | LEFT | RIGHT}
       >
         <centerbox>
-          <box $type="start">
+          <box $type="start" class="left-tools">
             <OsLogo />
             <WorksPaces />
+            <label class="bar-separator" label="|" />
+            <Toolbox />
           </box>
           <FocusedClient $type="center"/>
           <box $type="end" class="buttons-tools">
             <Mpris />
+            <PromotedTools />
             <BrightnessSlider/>
             <AudioOutput />
             
             <Clock />
+            <NotificationCenter />
             <Shutdown />
           </box>
         </centerbox>
