@@ -88,10 +88,13 @@ export default function ScreenShot() {
 
   const captureRegion = () => {
     closePopover();
-    showFeedback("Selecione a área na tela com o mouse...");
-    const cmd = `sleep 0.4; grim -g "$(slurp)" - | wl-copy 2>/dev/null || hyprshot -m region --clipboard-only 2>/dev/null`;
+    const dir = getPicturesDir();
+    const filepath = `${dir}/Captura_Regiao_${getTimestamp()}.png`;
+    showFeedback("Arraste para selecionar a região (Segure ESPAÇO para mover a caixa)...");
+    const slurpArgs = "-d -b 1e1e2e66 -c 89b4faff -s 89b4fa33 -w 2";
+    const cmd = `sleep 0.4; REGION=$(slurp ${slurpArgs}) && grim -g "$REGION" "${filepath}" && wl-copy < "${filepath}"`;
     execAsync(`bash -c '${cmd}'`)
-      .then(() => showFeedback("Área capturada e copiada para a Área de Transferência!"))
+      .then(() => showFeedback(`Região capturada e salva em ${dir} (e copiada!)`))
       .catch(() => {});
   };
 
@@ -111,7 +114,7 @@ export default function ScreenShot() {
     showFeedback("Capturando tela inteira...");
     const cmd = `sleep 0.5; grim "${filepath}" 2>/dev/null || hyprshot -m output -o "${dir}" 2>/dev/null || gnome-screenshot -f "${filepath}" 2>/dev/null`;
     execAsync(`bash -c '${cmd}'`)
-      .then(() => showFeedback(`Tela inteira salva em ${dir}`))
+      .then(() => showFeedback(`Tela inteira salva com sucesso em ${dir}`))
       .catch(() => {});
   };
 
@@ -158,10 +161,10 @@ export default function ScreenShot() {
             />
           </box>
 
-          <button onClicked={captureRegion} tooltipText="Selecionar com o mouse e copiar">
+          <button onClicked={captureRegion} tooltipText="Selecionar com o mouse (Segure ESPAÇO para mover)">
             <box spacing={8}>
               <image iconName="edit-select-all-symbolic" />
-              <label label="Capturar Região (Copiar)" />
+              <label label="Capturar Região (Ajustável)" />
             </box>
           </button>
           <button onClicked={captureWindow} tooltipText="Capturar janela ativa">
