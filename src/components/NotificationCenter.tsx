@@ -1,15 +1,78 @@
-import { createBinding, For } from "ags";
+import { createBinding, For, createState } from "ags";
 import { Gtk } from "ags/gtk4";
 import AstalNotifd from "gi://AstalNotifd?version=0.1";
+import GLib from "gi://GLib?version=2.0";
+
+interface NotifItem {
+  id: string;
+  appName: string;
+  summary: string;
+  body: string;
+  time: string;
+}
+
+const CONFIG_DIR = `${GLib.get_user_config_dir()}/salopbar`;
+const NOTIF_FILE = `${CONFIG_DIR}/notif_history.json`;
+
+function loadNotifHistory(): NotifItem[] {
+  try {
+    if (GLib.file_test(NOTIF_FILE, GLib.FileTest.EXISTS)) {
+      const [ok, bytes] = GLib.file_get_contents(NOTIF_FILE);
+      if (ok && bytes) {
+        return JSON.parse(new TextDecoder().decode(bytes));
+      }
+    }
+  } catch (_) {}
+  return [];
+}
+
+function saveNotifHistory(list: NotifItem[]): void {
+  try {
+    GLib.mkdir_with_parents(CONFIG_DIR, 0o755);
+    GLib.file_set_contents(NOTIF_FILE, JSON.stringify(list.slice(0, 30)));
+  } catch (_) {}
+}
+
+const [history, setHistory] = createState<NotifItem[]>(loadNotifHistory());
+
+// Conecta aos sinais globais do notifd para guardar o histórico persistente
+try {
+  const notifd = AstalNotifd.get_default();
+  notifd.connect("notified", (self, id) => {
+    try {
+      const n = self.get_notification(id);
+      if (!n) return;
+      const item: NotifItem = {
+        id: `${id}_${Date.now()}`,
+        appName: n.appName || "Sistema",
+        summary: n.summary || "Notificação",
+        body: n.body || "",
+        time: GLib.DateTime.new_now_local().format("%H:%M") || "",
+      };
+      const cur = history.get();
+      const updated = [item, ...cur].slice(0, 30);
+      setHistory(updated);
+      saveNotifHistory(updated);
+    } catch (_) {}
+  });
+} catch (_) {}
 
 export default function NotificationCenter() {
   const notifd = AstalNotifd.get_default();
-  const notifications = createBinding(notifd, "notifications");
   const dontDisturb = createBinding(notifd, "dontDisturb");
 
   const clearAll = () => {
-    const list = notifd.notifications;
-    list.forEach((n) => n.dismiss());
+    try {
+      notifd.notifications.forEach((n) => n.dismiss());
+    } catch (_) {}
+    setHistory([]);
+    saveNotifHistory([]);
+  };
+
+  const removeItem = (id: string) => {
+    const updated = history.get().filter((item) => item.id !== id);
+    setHistory(updated);
+    saveNotifHistory(updated);
   };
 
   const toggleDnd = () => {
@@ -17,7 +80,7 @@ export default function NotificationCenter() {
   };
 
   return (
-    <menubutton class="notif-btn" tooltipText="Central de Notificações">
+    <menubutton class="notif-btn" tooltipText="Central de Notificações (Histórico)">
       <box spacing={4}>
         <image
           iconName={dontDisturb.as((d) =>
@@ -25,13 +88,13 @@ export default function NotificationCenter() {
           )}
         />
         <label
-          visible={notifications.as((l) => l.length > 0)}
-          label={notifications.as((l) => l.length.toString())}
+          visible={history.as((l) => l.length > 0)}
+          label={history.as((l) => l.length.toString())}
           css="color: #89b4fa; font-weight: bold;"
         />
       </box>
       <popover>
-        <box spacing={8} orientation={Gtk.Orientation.VERTICAL} widthRequest={290}>
+        <box spacing={8} orientation={Gtk.Orientation.VERTICAL} widthRequest={300}>
           <box orientation={Gtk.Orientation.HORIZONTAL}>
             <label
               label="Notificações"
@@ -51,7 +114,7 @@ export default function NotificationCenter() {
             </button>
             <button
               onClicked={clearAll}
-              visible={notifications.as((l) => l.length > 0)}
+              visible={history.as((l) => l.length > 0)}
               tooltipText="Dispensar todas"
             >
               <label label="Limpar" />
@@ -59,26 +122,22 @@ export default function NotificationCenter() {
           </box>
 
           <box
-            visible={notifications.as((l) => l.length === 0)}
+            visible={history.as((l) => l.length === 0)}
             orientation={Gtk.Orientation.VERTICAL}
             spacing={6}
             css="padding: 20px 0;"
           >
             <image iconName="object-select-symbolic" pixelSize={32} css="color: #585b70;" />
             <label
-              label="Nenhuma notificação no momento"
+              label="Nenhuma notificação no histórico"
               css="color: #6c7086; font-size: 11px;"
             />
           </box>
 
-          <box orientation={Gtk.Orientation.VERTICAL} spacing={6}>
-            <For each={notifications}>
-              {(notif) => {
-                const summary = createBinding(notif, "summary");
-                const body = createBinding(notif, "body");
-                const appName = createBinding(notif, "appName");
-
-                return (
+          <Gtk.ScrolledWindow heightRequest={280} visible={history.as((l) => l.length > 0)}>
+            <box orientation={Gtk.Orientation.VERTICAL} spacing={6}>
+              <For each={history}>
+                {(item) => (
                   <box
                     class="notif-card"
                     orientation={Gtk.Orientation.VERTICAL}
@@ -87,36 +146,37 @@ export default function NotificationCenter() {
                   >
                     <box orientation={Gtk.Orientation.HORIZONTAL}>
                       <label
-                        label={appName.as((a) => a || "Sistema")}
+                        label={`${item.appName || "Sistema"} • ${item.time || ""}`}
                         css="font-size: 10px; color: #a6adc8; font-weight: bold;"
                         hexpand
                         xalign={0}
                       />
                       <button
-                        onClicked={() => notif.dismiss()}
-                        tooltipText="Dispensar"
+                        onClicked={() => removeItem(item.id)}
+                        tooltipText="Remover"
                         css="background: transparent; border: none; padding: 0;"
                       >
                         <image iconName="window-close-symbolic" />
                       </button>
                     </box>
                     <label
-                      label={summary}
+                      label={item.summary || "Sem título"}
                       css="font-weight: bold; color: #cdd6f4;"
                       xalign={0}
                       wrap
                     />
                     <label
-                      label={body}
+                      visible={Boolean(item.body)}
+                      label={item.body || ""}
                       css="font-size: 11px; color: #a6adc8;"
                       xalign={0}
                       wrap
                     />
                   </box>
-                );
-              }}
-            </For>
-          </box>
+                )}
+              </For>
+            </box>
+          </Gtk.ScrolledWindow>
         </box>
       </popover>
     </menubutton>

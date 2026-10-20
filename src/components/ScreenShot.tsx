@@ -45,7 +45,7 @@ function getTimestamp(): string {
 
 function showFeedback(msg: string) {
   setFeedback(msg);
-  execAsync(`bash -c "notify-send -i camera-photo-symbolic 'Print de Tela' '${msg.replace(/'/g, "'\\''")}'"`).catch(() => {});
+  execAsync(["bash", "-c", `notify-send -i camera-photo-symbolic "Print de Tela" "${msg.replace(/"/g, '\\"')}"`]).catch(() => {});
 }
 
 export default function ScreenShot() {
@@ -69,13 +69,13 @@ export default function ScreenShot() {
     const isRec = recording.get();
     const dir = getVideosDir();
     if (isRec) {
-      execAsync("bash -c 'pkill -INT wf-recorder'").catch(() => {});
+      execAsync(["bash", "-c", "pkill -INT wf-recorder"]).catch(() => {});
       setRecording(false);
       showFeedback(`Gravação concluída! Vídeo salvo em ${dir}`);
     } else {
       const filepath = `${dir}/Gravacao_${getTimestamp()}.mp4`;
       const cmd = `sleep 0.4; wf-recorder -f "${filepath}" 2>/dev/null &`;
-      execAsync(`bash -c '${cmd}'`)
+      execAsync(["bash", "-c", cmd])
         .then(() => {
           setRecording(true);
           showFeedback(`Gravação iniciada em ${dir}`);
@@ -92,8 +92,8 @@ export default function ScreenShot() {
     const filepath = `${dir}/Captura_Regiao_${getTimestamp()}.png`;
     showFeedback("Arraste para selecionar a região (Segure ESPAÇO para mover a caixa)...");
     const slurpArgs = "-d -b 1e1e2e66 -c 89b4faff -s 89b4fa33 -w 2";
-    const cmd = `sleep 0.4; REGION=$(slurp ${slurpArgs}) && grim -g "$REGION" "${filepath}" && wl-copy < "${filepath}"`;
-    execAsync(`bash -c '${cmd}'`)
+    const cmd = `sleep 0.4; REGION=$(slurp ${slurpArgs}); if [ -n "$REGION" ]; then grim -g "$REGION" "${filepath}" && wl-copy < "${filepath}"; fi`;
+    execAsync(["bash", "-c", cmd])
       .then(() => showFeedback(`Região capturada e salva em ${dir} (e copiada!)`))
       .catch(() => {});
   };
@@ -102,7 +102,7 @@ export default function ScreenShot() {
     closePopover();
     showFeedback("Capturando janela ativa...");
     const cmd = `sleep 0.4; hyprshot -m window --clipboard-only 2>/dev/null || grim -g "$(slurp)" - | wl-copy 2>/dev/null`;
-    execAsync(`bash -c '${cmd}'`)
+    execAsync(["bash", "-c", cmd])
       .then(() => showFeedback("Janela capturada e copiada para a Área de Transferência!"))
       .catch(() => {});
   };
@@ -113,7 +113,7 @@ export default function ScreenShot() {
     const filepath = `${dir}/Captura_${getTimestamp()}.png`;
     showFeedback("Capturando tela inteira...");
     const cmd = `sleep 0.5; grim "${filepath}" 2>/dev/null || hyprshot -m output -o "${dir}" 2>/dev/null || gnome-screenshot -f "${filepath}" 2>/dev/null`;
-    execAsync(`bash -c '${cmd}'`)
+    execAsync(["bash", "-c", cmd])
       .then(() => showFeedback(`Tela inteira salva com sucesso em ${dir}`))
       .catch(() => {});
   };

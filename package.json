@@ -38,7 +38,7 @@
   },
   "scripts": {
     "build:install": "npm install && arch-meson build && meson install -C build",
-    "build:test": "meson setup --prefix \"$(pwd)/dist\" --reconfigure build && meson install -C build",
+    "build:test": "meson setup --prefix \"$(pwd)/dist\" build && meson install -C build",
     "start:dev": "nodemon startdev.js"
   },
   "nodemonConfig": {
